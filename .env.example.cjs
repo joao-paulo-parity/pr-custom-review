@@ -39,3 +39,16 @@ process.env.GITLAB_TARGET_GROUP ??= "placeholder"
 
 // GITLAB_ACCESS_TOKEN should have "write_api" scope in $GITLAB_TARGET_GROUP
 process.env.GITLAB_ACCESS_TOKEN ??= "placeholder"
+
+/*
+  NOT REQUIRED, but useful during development
+
+  Since GitHub is only able to send webhook events to publicly-accessible
+  internet addresses, for local development you'll need an intermediary service
+  which delivers the payload to your local instance (which is not exposed to the
+  internet). An EventSource-compliant (https://developer.mozilla.org/en-US/docs/Web/API/EventSource)
+  service such as https://smee.io/ can be used for that.
+  The same URL used in this variable should be used as the Webhook URL in
+  https://github.com/settings/apps/your-app
+*/
+// process.env.WEBHOOK_PROXY_URL ??= "https://smee.io/placeholder"
