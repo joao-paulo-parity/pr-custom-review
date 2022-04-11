@@ -19,7 +19,6 @@ export type Context = {
   octokit: Octokit
   pr: PR
   finishProcessReviews: ((state: CommitState) => Promise<void>) | null
-  configFilePath: string | null
 }
 
 export type PR = {

@@ -81,7 +81,6 @@ describe("Configuration", () => {
             pr: basePR,
             octokit,
             logger,
-            configFilePath: null,
             finishProcessReviews: null,
           }),
         ).toBe("failure")
@@ -121,7 +120,6 @@ describe("Configuration", () => {
             pr: basePR,
             octokit,
             logger,
-            configFilePath: null,
             finishProcessReviews: null,
           }),
         ).toBe("failure")

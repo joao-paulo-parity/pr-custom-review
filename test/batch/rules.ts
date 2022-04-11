@@ -170,7 +170,6 @@ describe("Rules", () => {
             pr: basePR,
             octokit,
             logger,
-            configFilePath: null,
             finishProcessReviews: null,
           }),
         ).toBe(scenario === "Approved" ? "success" : "failure")
@@ -209,7 +208,6 @@ describe("Rules", () => {
             pr: basePR,
             octokit,
             logger,
-            configFilePath: null,
             finishProcessReviews: null,
           }),
         ).toBe(scenario === "Approved" ? "success" : "failure")
@@ -264,7 +262,6 @@ describe("Rules", () => {
             pr: basePR,
             octokit,
             logger,
-            configFilePath: null,
             finishProcessReviews: null,
           }),
         ).toBe(scenario === "Approved" ? "success" : "failure")
@@ -305,7 +302,6 @@ describe("Rules", () => {
             pr: basePR,
             octokit,
             logger,
-            configFilePath: null,
             finishProcessReviews: null,
           }),
         ).toBe(scenario === "Approved" ? "success" : "failure")
@@ -382,7 +378,6 @@ describe("Rules", () => {
               pr: basePR,
               octokit,
               logger,
-              configFilePath: null,
               finishProcessReviews: null,
             }),
           ).toBe(expected)
@@ -469,7 +464,6 @@ describe("Rules", () => {
               pr: basePR,
               octokit,
               logger,
-              configFilePath: null,
               finishProcessReviews: null,
             }),
           ).toBe(expectedCheckOutcome)
@@ -558,7 +552,6 @@ describe("Rules", () => {
               pr: basePR,
               octokit,
               logger,
-              configFilePath: null,
               finishProcessReviews: null,
             }),
           ).toBe(expectedCheckOutcome)
@@ -608,7 +601,6 @@ describe("Rules", () => {
               pr: basePR,
               octokit,
               logger,
-              configFilePath: null,
               finishProcessReviews: null,
             }),
           ).toBe(
@@ -657,7 +649,6 @@ describe("Rules", () => {
             pr: basePR,
             octokit,
             logger,
-            configFilePath: null,
             finishProcessReviews: null,
           }),
         ).toBe(scenario === "Approved" ? "success" : "failure")
@@ -697,7 +688,6 @@ describe("Rules", () => {
             pr: basePR,
             octokit,
             logger,
-            configFilePath: null,
             finishProcessReviews: null,
           }),
         ).toBe(scenario === "Approved" ? "success" : "failure")
@@ -735,7 +725,6 @@ describe("Rules", () => {
             pr: basePR,
             octokit,
             logger,
-            configFilePath: null,
             finishProcessReviews: null,
           }),
         ).toBe(scenario === "Approved" ? "success" : "failure")
@@ -786,7 +775,6 @@ describe("Rules", () => {
           pr: basePR,
           octokit,
           logger,
-          configFilePath: null,
           finishProcessReviews: null,
         }),
       ).toBe(scenario === "Approved" ? "success" : "failure")
@@ -814,7 +802,6 @@ describe("Rules", () => {
           pr: basePR,
           octokit,
           logger,
-          configFilePath: null,
           finishProcessReviews: null,
         }),
       ).toBe("failure")

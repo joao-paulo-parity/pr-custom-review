@@ -98,13 +98,7 @@ const main = async () => {
     process.exit(0)
   }
 
-  const ctx: Context = {
-    logger,
-    octokit,
-    pr,
-    finishProcessReviews,
-    configFilePath: null,
-  }
+  const ctx: Context = { logger, octokit, pr, finishProcessReviews }
   await processReviews(ctx)
 }
 

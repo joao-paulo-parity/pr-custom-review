@@ -1,13 +1,12 @@
 import { OctokitResponse } from "@octokit/types"
 import assert from "assert"
-import { readFile } from "fs/promises"
 import YAML from "yaml"
 
 import {
   actionReviewTeamFiles,
   commitStateFailure,
   commitStateSuccess,
-  configFilePath as defaultConfigFilePath,
+  configFilePath,
   maxGithubApiFilesPerPage,
   maxGithubApiReviewsPerPage,
   maxGithubApiTeamMembersPerPage,
@@ -24,7 +23,6 @@ import {
   RuleSuccess,
   RuleUserInfo,
 } from "./types"
-import { Err } from "./utils"
 import { configurationSchema } from "./validation"
 
 type TeamsCache = Map<
@@ -97,47 +95,33 @@ const combineUsers = async (
   without inconveniences. If you need more external input then pass it as a
   function argument.
 */
-export const runChecks = async ({
-  pr,
-  octokit,
-  logger,
-  configFilePath,
-}: Context) => {
-  const configFileContents = await (async () => {
-    if (configFilePath) {
-      return readFile(configFilePath).then((buf) => {
-        return buf.toString("utf-8")
-      })
-    } else {
-      const configFileResponse = await octokit.rest.repos.getContent({
-        owner: pr.base.repo.owner.login,
-        repo: pr.base.repo.name,
-        path: defaultConfigFilePath,
-      })
-      if (!("content" in configFileResponse.data)) {
-        logger.fatal(
-          `Did not find "content" key in the response for ${defaultConfigFilePath}`,
-        )
-        logger.info(configFileResponse.data)
-        return new Err(commitStateFailure)
-      }
-
-      const { content: configFileContentsEnconded } = configFileResponse.data
-      if (typeof configFileContentsEnconded !== "string") {
-        logger.fatal(
-          `Content response for ${defaultConfigFilePath} had unexpected type (expected string)`,
-        )
-        logger.info(configFileResponse.data)
-        return new Err(commitStateFailure)
-      }
-
-      return Buffer.from(configFileContentsEnconded, "base64").toString("utf-8")
-    }
-  })()
-
-  if (configFileContents instanceof Err) {
-    return configFileContents.value
+export const runChecks = async ({ pr, octokit, logger }: Context) => {
+  const configFileResponse = await octokit.rest.repos.getContent({
+    owner: pr.base.repo.owner.login,
+    repo: pr.base.repo.name,
+    path: configFilePath,
+  })
+  if (!("content" in configFileResponse.data)) {
+    logger.fatal(
+      `Did not find "content" key in the response for ${configFilePath}`,
+    )
+    logger.info(configFileResponse.data)
+    return commitStateFailure
   }
+
+  const { content: configFileContentsEnconded } = configFileResponse.data
+  if (typeof configFileContentsEnconded !== "string") {
+    logger.fatal(
+      `Content response for ${configFilePath} had unexpected type (expected string)`,
+    )
+    logger.info(configFileResponse.data)
+    return commitStateFailure
+  }
+
+  const configFileContents = Buffer.from(
+    configFileContentsEnconded,
+    "base64",
+  ).toString("utf-8")
 
   const configValidationResult = configurationSchema.validate(
     YAML.parse(configFileContents),

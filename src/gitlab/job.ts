@@ -1,5 +1,4 @@
 import { Octokit } from "@octokit/rest"
-import { join as joinPath } from "path"
 
 import { processReviews } from "src/core"
 import Logger from "src/logger"
@@ -8,8 +7,6 @@ import { envNumberVar, envVar } from "src/utils"
 
 const main = async () => {
   const ciJobUrl = envVar("CI_JOB_URL")
-
-  const configFilePath = joinPath(__dirname, ".github", "pr-custom-review.yml")
 
   const githubToken = envVar("GITHUB_TOKEN")
   const octokit = new Octokit({ auth: githubToken })
@@ -59,13 +56,7 @@ const main = async () => {
     }
   }
 
-  const ctx: Context = {
-    logger,
-    octokit,
-    pr,
-    finishProcessReviews,
-    configFilePath,
-  }
+  const ctx: Context = { logger, octokit, pr, finishProcessReviews }
 
   await processReviews(ctx)
 }

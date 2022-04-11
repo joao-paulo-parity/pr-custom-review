@@ -16,13 +16,6 @@ export const envNumberVar = (name: string) => {
   return valNumber
 }
 
-export class Ok<T> {
-  constructor(public value: T) {}
-}
-export class Err<T> {
-  constructor(public value: T) {}
-}
-
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
 const normalizers = {
   symbol: (value: any) => {
