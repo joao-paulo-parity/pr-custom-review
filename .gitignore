@@ -9,7 +9,7 @@ build/*
 *.pem
 
 # Environment files
-/.env.cjs
+.env.cjs
 
 # jest
 coverage

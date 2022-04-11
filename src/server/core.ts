@@ -1,6 +1,6 @@
 import fetch from "node-fetch"
-import { ciJobName } from "./constants"
 
+import { ciJobName } from "./constants"
 import { ServerContext } from "./types"
 
 export const triggerCiJob = async (
