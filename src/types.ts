@@ -6,6 +6,22 @@ export type CommitState =
 
 export type Octokit = ReturnType<typeof github.getOctokit>
 
+export interface LoggerInterface {
+  info: (...args: any[]) => void
+  warn: (...args: any[]) => void
+  error: (...args: any[]) => void
+  fatal: (...args: any[]) => void
+  markNextLineAsRelevantStartingLine: (delta: number) => void
+}
+
+export type Context = {
+  logger: LoggerInterface
+  octokit: Octokit
+  pr: PR
+  finishProcessReviews: ((state: CommitState) => Promise<void>) | null
+  configFilePath: string | null
+}
+
 export type PR = {
   number: number
   base: {
@@ -38,8 +54,8 @@ export type BaseRule = {
 export type RuleCriteria = {
   min_approvals: number
   name?: string
-  users?: Array<string> | null
-  teams?: Array<string> | null
+  users?: string[] | null
+  teams?: string[] | null
 }
 
 export type BasicRule = BaseRule & RuleCriteria

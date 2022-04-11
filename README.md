@@ -311,11 +311,11 @@ to download dependencies first.
 #### Build steps <a name="build-steps"></a>
 
 1. Install the dependencies
-    `npm install`
+    `yarn install`
 2. Build
-    `npm run build`
+    `yarn build`
 3. Package
-    `npm run package`
+    `yarn package`
 
 See the next sections for [trying it out](#trial) or [releasing](#release).
 
@@ -419,8 +419,8 @@ installed.
 
 ### Testing
 
-Run `npm run test`.
+Run `yarn test`.
 
 Test logging is saved to [snapshots](./test/batch) (`.snap` files). If your
-code changes affect some snapshot then review the modifications and run `npm
-run test -- -u`.
+code changes affect some snapshot then review the modifications and run `yarn
+test -u`.

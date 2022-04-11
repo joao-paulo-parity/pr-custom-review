@@ -1,7 +1,5 @@
 import { Octokit } from "@octokit/rest"
 import nock from "nock"
-import YAML from "yaml"
-
 import {
   basePR,
   changedFilesApiPath,
@@ -13,11 +11,12 @@ import {
   rulesExamples,
 } from "test/constants"
 import Logger from "test/logger"
+import YAML from "yaml"
 
 import { rulesConfigurations } from "src/constants"
 import { runChecks } from "src/core"
 
-const setup = function ({ rules }: { rules?: Array<Record<string, unknown>> }) {
+const setup = ({ rules }: { rules?: Record<string, unknown>[] }) => {
   nock(githubApi)
     .get(configFileContentsApiPath)
     .reply(200, {
@@ -27,12 +26,12 @@ const setup = function ({ rules }: { rules?: Array<Record<string, unknown>> }) {
     })
 }
 
-describe("Configuration", function () {
+describe("Configuration", () => {
   let logger: Logger
   let octokit: Octokit
   let logHistory: string[]
 
-  beforeEach(function () {
+  beforeEach(() => {
     nock.disableNetConnect()
     logHistory = []
     logger = new Logger(logHistory)
@@ -50,7 +49,7 @@ describe("Configuration", function () {
     const goodRule = rulesExamples[kind]
 
     for (const invalidField of invalidFields) {
-      const invalidFieldValidValue = (function () {
+      const invalidFieldValidValue = (() => {
         switch (invalidField) {
           case "all":
           case "all_distinct":
@@ -65,18 +64,27 @@ describe("Configuration", function () {
           default: {
             const exhaustivenessCheck: never = invalidField
             throw new Error(
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
               `invalidField is not handled: ${exhaustivenessCheck}`,
             )
           }
         }
       })()
 
-      it(`Rule kind ${kind} does not allow invalid field ${invalidField}`, async function () {
+      it(`Rule kind ${kind} does not allow invalid field ${invalidField}`, async () => {
         const badRule = { ...goodRule, [invalidField]: invalidFieldValidValue }
 
         setup({ rules: [badRule] })
 
-        expect(await runChecks(basePR, octokit, logger)).toBe("failure")
+        expect(
+          await runChecks({
+            pr: basePR,
+            octokit,
+            logger,
+            configFilePath: null,
+            finishProcessReviews: null,
+          }),
+        ).toBe("failure")
 
         expect(logHistory).toMatchSnapshot()
       })
@@ -88,7 +96,9 @@ describe("Configuration", function () {
       [0, "less than 1"],
       [null, "null"],
     ]) {
-      it(`min_approvals is invalid for ${kind} if it is ${description}`, async function () {
+      it(`min_approvals is invalid for ${kind} if it is ${String(
+        description,
+      )}`, async () => {
         setup({
           rules: [
             {
@@ -106,14 +116,22 @@ describe("Configuration", function () {
           ],
         })
 
-        expect(await runChecks(basePR, octokit, logger)).toBe("failure")
+        expect(
+          await runChecks({
+            pr: basePR,
+            octokit,
+            logger,
+            configFilePath: null,
+            finishProcessReviews: null,
+          }),
+        ).toBe("failure")
 
         expect(logHistory).toMatchSnapshot()
       })
     }
   }
 
-  afterEach(function () {
+  afterEach(() => {
     nock.cleanAll()
     nock.enableNetConnect()
   })

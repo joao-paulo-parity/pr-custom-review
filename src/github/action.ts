@@ -1,11 +1,11 @@
 import { getInput, setFailed } from "@actions/core"
 import { context, getOctokit } from "@actions/github"
 
-import { runChecks } from "./core"
-import Logger from "./logger"
-import { CommitState, PR } from "./types"
+import { processReviews } from "src/core"
+import Logger from "src/logger"
+import { CommitState, Context, PR } from "src/types"
 
-const main = function () {
+const main = async () => {
   if (
     context.eventName !== "pull_request" &&
     context.eventName !== "pull_request_review"
@@ -21,17 +21,19 @@ const main = function () {
   const pr = context.payload.pull_request as PR
   const octokit = getOctokit(getInput("token", { required: true }))
 
-  const finish = async function (state: CommitState) {
+  const finishProcessReviews = async (state: CommitState) => {
     // Fallback URL in case we are not able to detect the current job
     let detailsUrl = `${context.serverUrl}/${pr.base.repo.owner.login}/${pr.base.repo.name}/actions/runs/${context.runId}`
 
     if (state === "failure") {
       const jobName = process.env.GITHUB_JOB
       if (jobName === undefined) {
-        logger.warning("Job name was not found in the environment")
+        logger.warn("Job name was not found in the environment")
       } else {
-        // Fetch the jobs so that we'll be able to detect this step and provide a
-        // more accurate logging location
+        /*
+          Fetch the jobs so that we'll be able to detect this step and provide a
+          more accurate logging location
+        */
         const {
           data: { jobs },
         } = await octokit.rest.actions.listJobsForWorkflowRun({
@@ -44,21 +46,19 @@ const main = function () {
             let stepNumber: number | undefined = undefined
             const actionRepository = process.env.GITHUB_ACTION_REPOSITORY
             if (actionRepository === undefined) {
-              logger.warning(
-                "Action repository was not found in the environment",
-              )
+              logger.warn("Action repository was not found in the environment")
             } else {
               const actionRepositoryMatch = actionRepository.match(/[^/]*$/)
               if (actionRepositoryMatch === null) {
-                logger.warning(
+                logger.warn(
                   `Action repository name could not be extracted from ${actionRepository}`,
                 )
               } else {
-                const actionStep = job.steps?.find(function ({ name }) {
+                const actionStep = job.steps?.find(({ name }) => {
                   return name === actionRepositoryMatch[0]
                 })
                 if (actionStep === undefined) {
-                  logger.warning(
+                  logger.warn(
                     `Failed to find ${actionRepositoryMatch[0]} in the job's steps`,
                     job.steps,
                   )
@@ -67,7 +67,7 @@ const main = function () {
                 }
               }
             }
-            detailsUrl = `${job.html_url}${
+            detailsUrl = `${job.html_url as string}${
               stepNumber
                 ? `#step:${stepNumber}:${logger.relevantStartingLine}`
                 : ""
@@ -88,22 +88,24 @@ const main = function () {
       description: "Please visit Details for more information",
     })
 
-    logger.log(`Final state: ${state}`)
+    logger.info(`Final state: ${state}`)
 
-    // We always exit with 0 so that there are no lingering failure statuses in
-    // the pipeline for the action. The custom status created above will be the
-    // one to inform the outcome of this action.
+    /*
+      We always exit with 0 so that there are no lingering failure statuses in
+      the pipeline for the action. The custom status created above will be the
+      one to inform the outcome of this action.
+    */
     process.exit(0)
   }
 
-  runChecks(pr, octokit, logger)
-    .then(function (state) {
-      finish(state)
-    })
-    .catch(function (error) {
-      logger.failure(error)
-      finish("failure")
-    })
+  const ctx: Context = {
+    logger,
+    octokit,
+    pr,
+    finishProcessReviews,
+    configFilePath: null,
+  }
+  await processReviews(ctx)
 }
 
-main()
+void main()

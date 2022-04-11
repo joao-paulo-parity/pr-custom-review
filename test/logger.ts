@@ -1,6 +1,6 @@
 import { inspect } from "util"
 
-import { LoggerInterface } from "src/logger"
+import { LoggerInterface } from "src/types"
 
 export class Logger implements LoggerInterface {
   logHistory: string[]
@@ -11,14 +11,14 @@ export class Logger implements LoggerInterface {
 
   doLog = (...args: any[]) => {
     const message = args
-      .map(function (arg) {
+      .map((arg) => {
         return typeof arg === "string" ? arg : inspect(arg)
       })
       .join(" ")
     this.logHistory.push(message)
   }
 
-  public log = (...args: any[]) => {
+  public info = (...args: any[]) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.doLog(...args)
   }
@@ -28,12 +28,12 @@ export class Logger implements LoggerInterface {
     this.doLog("ERROR: ", ...args)
   }
 
-  public warning = (...args: any[]) => {
+  public warn = (...args: any[]) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.doLog("WARNING: ", ...args)
   }
 
-  public failure = (...args: any[]) => {
+  public fatal = (...args: any[]) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.error(...args)
   }
