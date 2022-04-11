@@ -10,4 +10,4 @@ inputs:
     description: 'Repository token'
 runs:
   using: 'node16'
-  main: 'dist/.js'
+  main: 'dist/prcr/index.js'
