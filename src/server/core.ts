@@ -20,15 +20,20 @@ export const triggerCiJob = async (
     `Attempting to find the latest "${ciJobName}" job to retrigger`,
   )
 
-  const gitlabHeaders = { "X-PRIVATE-TOKEN": gitlab.accessToken }
+  const gitlabHeaders = { "PRIVATE-TOKEN": gitlab.accessToken }
 
   let jobsPage = 1
   while (true) {
-    const jobs = (await (
+    const responseBody = await (
       await fetch(`${projectApi}/jobs?page=${jobsPage}&per_page=100`, {
         headers: gitlabHeaders,
       })
-    ).json()) as { id: number; name: string; ref: string }[]
+    ).text()
+    const jobs = JSON.parse(responseBody) as {
+      id: number
+      name: string
+      ref: string
+    }[]
 
     if (jobs.length === 0) {
       break
