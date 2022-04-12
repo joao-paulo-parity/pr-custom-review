@@ -26,17 +26,6 @@ const main = async () => {
   const finishProcessReviews = async (state: CommitState) => {
     logger.info(`Final state: ${state}`)
 
-    const detailsUrl = `${ciJobUrl}#L${logger.relevantStartingLine}`
-    await octokit.rest.repos.createCommitStatus({
-      owner: pr.base.repo.owner.login,
-      repo: pr.base.repo.name,
-      sha: pr.head.sha,
-      state,
-      context: "Check reviews",
-      target_url: detailsUrl,
-      description: "Please visit Details for more information",
-    })
-
     switch (state) {
       case "error":
       case "failure": {
