@@ -9,7 +9,6 @@ const main = async () => {
   const ciJobUrl = envVar("CI_JOB_URL")
 
   const githubToken = envVar("GITHUB_TOKEN")
-  console.log({ githubToken })
   const octokit = new Octokit({ auth: githubToken })
 
   const githubOwner = envVar("GITHUB_ORG")
